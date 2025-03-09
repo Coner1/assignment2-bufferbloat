@@ -21,6 +21,24 @@ WEBSERVER_PORT = 8001
 # class NetworkTopology(Topo):
 # TODO: Write your own network topology here
 # Make sure to connect the link for h2 after the link for h1.
+class NetworkTopology(Topo):
+    def __init__(self, queue_size, **opts):
+        Topo.__init__(self, **opts)
+
+        # Add hosts
+        h1 = self.addHost('h1')
+        h2 = self.addHost('h2')
+
+        # Add switch
+        s1 = self.addSwitch('s1')
+
+        # Add links
+        # Link from h1 to s1 (no queue size restriction here)
+        self.addLink(h1, s1, bw=10, delay='5ms')
+
+        # Link from s1 to h2 (last link, with configurable queue size)
+        self.addLink(s1, h2, bw=10, delay='5ms', max_queue_size=queue_size)
+
 
 
 def start_ping(server_host, client_host, data_dir):
@@ -193,10 +211,37 @@ def buffer_bloat_experiment(args):
     # std = 0
     # print(f"Ping times ({len(ping_times)}): {avg:0.3f}ms +- {std:0.3f}ms")
 
+    ping_times = []
+    with open(args.data_dir / 'ping.txt', 'r') as f:
+        for line in f:
+            match = re.search(r"time=(\d+(?:\.\d+)?) ms", line)
+            if match:
+                ping_times.append(float(match.group(1)))
+
+    if ping_times:
+        avg = np.mean(ping_times)
+        std = np.std(ping_times)
+        print(f"Ping times ({len(ping_times)}): {avg:.3f}ms ± {std:.3f}ms")
+    else:
+        print("No valid ping times found.")
+
     # TODO: Measure average and standard deviation of curl requests (download times written to curl.txt)
     # avg = 0
     # std = 0
     # print(f"Download times ({len(download_times)}): {avg:0.3f}s +- {std:0.3f}s")
+
+    download_times = []
+    with open(args.data_dir / 'curl.txt', 'r') as f:
+        for line in f:
+            download_time, _ = map(float, line.strip().split(','))
+            download_times.append(download_time)
+
+    if download_times:
+        avg = np.mean(download_times)
+        std = np.std(download_times)
+        print(f"Download times ({len(download_times)}): {avg:.3f}s ± {std:.3f}s")
+    else:
+        print("No valid download times found.")
 
 
 if __name__ == '__main__':
