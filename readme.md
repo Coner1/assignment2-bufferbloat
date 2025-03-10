@@ -115,15 +115,48 @@ For Reno (50 packets):
 The blue line (TCP CWND) takes much more time to turn around and adjust because there is a larger buffer.
 With more space to hold packets, it doesn’t fill up as fast, so the CWND grows higher (up to 50 MSS or more) and takes longer to drop back down.
 
+
+
+
 # Part 3 Questions
 
 ## Part 3 - 1
 Q: Considering how the TCP congestion window size changes and the queue length, do you see any difference
 in the plots from Part 2 and Part 3? Give a brief explanation for the result you see.
 
+A:
+Yes, there are differences in the plots between Part 2 (no loss) and Part 3 (with 5% loss). 
+Looking at the output directories like lossy_reno_10 and lossy_reno_50:
 
+TCP CWND (blue line): In Part 3, the CWND drops more often and stays lower compared to Part 2. 
+For example, in lossy_reno_10, the CWND fluctuates rapidly between 20-50 MSS instead of 50-100 MSS, and in lossy_reno_50, it takes longer to recover but doesn’t grow as high.
+Queue Length (red line): The queue length spikes are shorter and less frequent in Part 3. In lossy_reno_50, it peaks around 20-30 MSS during requests, compared to 40-50 MSS in Part 2.
+Explanation:
+
+Packet loss (5%) tricks Reno into thinking the network is full, so it reduces the CWND quickly to avoid sending too much. 
+This lowers the queue length because fewer packets are sent, but it also means the network doesn’t fill the buffer as much. 
+The rapid drops in CWND in the plots show Reno reacting to loss, unlike the steadier growth in Part 2.
 
 ## Part 3 - 2
 Q: Considering the buffer size of 50 packets, which of the three congestion control algorithms was most per-
 formant (in terms of throughput) in the presence of increased random loss? Why do you think this is the
 case?
+
+A:
+Based on the output directories lossy_reno_50, lossy_cubic_50, and lossy_bbr_50, 
+Cubic was the most performant in terms of throughput with a 50-packet buffer in a lossy network. 
+The average download times from screenshot show:
+
+Reno: 4.3s ± 0.7s
+Cubic: 4.1s ± 0.6s
+BBR: 5.3s ± 1.0s
+which means:
+Cubic has the lowest average download time (4.1s), meaning it delivers the highest throughput. 
+It’s also the most consistent, with the smallest variation (±0.6s). 
+BBR is the slowest (5.3s) and has the most variation (±1.0s).
+
+Here are my thoughts on why this happened:
+In a lossy network (5% loss), Reno and Cubic are designed to slow down when packets are lost, thinking the network is full. 
+But Cubic is better at recovering quickly because it increases its sending rate more aggressively after a loss compared to Reno. 
+This helps Cubic keep sending data faster, leading to better throughput (lower fetch time). 
+BBR, on the other hand, focuses on delay and speed, not just loss, so random packet drops confuse it more, slowing it down in this case (higher fetch time). 
