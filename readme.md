@@ -5,6 +5,12 @@
 # CCID : jdoe
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+
+# Settings
+(h1-s1)link delay = 10ms
+(s1-h2)link delay = 10ms
+
+
 # Part 2 Questions
 
 ## Part 2 - 1
