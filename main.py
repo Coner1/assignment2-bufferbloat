@@ -37,7 +37,11 @@ class NetworkTopology(Topo):
         self.addLink(h1, s1, bw=1000, delay='10ms')
 
         # Link from s1 to h2 (last link, with configurable queue size)
-        self.addLink(s1, h2, bw=1.5, delay='10ms', max_queue_size=queue_size)
+        # self.addLink(s1, h2, bw=1.5, delay='10ms', max_queue_size=queue_size)
+
+        # Link from s1 to h2 (last link, with configurable queue size)
+        self.addLink(s1, h2, bw=1.5, delay='10ms', max_queue_size=queue_size, loss=5)
+
 
 
 
