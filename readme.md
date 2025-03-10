@@ -98,6 +98,23 @@ That’s why it’s faster and has less delay—it doesn’t let the buffer clog
 Q: Describe in technical terms why increasing buffer size reduces performance, causing the bufferbloat effect.
 Be sure to explicitly reference the plots you generated and the relationship between TCP congestion control
 and buffer size.
+A:
+Increasing the buffer size reduces performance because it causes bufferbloat, where too many packets get stuck waiting in the buffer. 
+This makes the network slower by increasing delay (RTT) and sometimes making webpage fetching take longer.
+How it happens:
+TCP controls how fast data is sent. For Reno, it keeps sending packets until some get lost, then slows down.
+With a small buffer, it fills up fast, tells Reno to slow down, and keeps packets moving quickly.
+With a big buffer, it can hold more packets, so Reno keeps sending without stopping soon enough. 
+This creates a long line of packets waiting, which adds delay and can slow down the whole process.
+
+For Reno (10 packets):
+The blue line (TCP CWND) goes up and down rapidly. 
+This quick change causes the RTT (green line), Curl Request (yellow areas), and Queue Length (red line) to also go up and down quickly. 
+Overall, the CWND stays around a steady level, usually between 5-20 MSS.
+For Reno (50 packets):
+The blue line (TCP CWND) takes much more time to turn around and adjust because there is a larger buffer.
+With more space to hold packets, it doesn’t fill up as fast, so the CWND grows higher (up to 50 MSS or more) and takes longer to drop back down.
+
 # Part 3 Questions
 
 ## Part 3 - 1
